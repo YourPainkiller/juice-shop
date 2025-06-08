@@ -1,3 +1,35 @@
+stages:
+  - build
+  - functional_test
+  - security_test
+
+build-job:
+  stage: build
+  image: node:20
+  script:
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - build/ 
+
+functional_test-job:
+  stage: functional_test
+  image: node:20
+  script:
+    - npm install
+    - npm test 
+
+security_test-job:
+  stage: security_test
+  image: semgrep/semgrep:latest
+  script:
+    - semgrep ci --config auto --sarif --output semgrep-results.sarif .
+  artifacts:
+    reports:
+      sast: semgrep-results.sarif 
+    when: always 
+    
 include:
   - template: Auto-DevOps.gitlab-ci.yml
 

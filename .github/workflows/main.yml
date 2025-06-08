@@ -28,6 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Semgrep SAST
+        if: always()
         run: semgrep ci --config auto --exclude "frontend/src/assets/private/**" --sarif --output semgrep-results.sarif
       - uses: github/codeql-action/upload-sarif@v3
         with:

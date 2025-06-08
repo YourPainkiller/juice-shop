@@ -26,10 +26,12 @@ jobs:
     container: semgrep/semgrep:latest
     needs: install
     steps:
-      - uses: actions/checkout@v4
       - name: Run Semgrep SAST
         if: always()
+        uses: actions/checkout@v4
         run: semgrep ci --config auto --exclude "frontend/src/assets/private/**" --sarif --output semgrep-results.sarif
-      - uses: github/codeql-action/upload-sarif@v3
+      - name: Run codeql
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep-results.sarif

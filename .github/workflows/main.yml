@@ -26,9 +26,11 @@ jobs:
     container: semgrep/semgrep:latest
     needs: install
     steps:
-      - name: Run Semgrep SAST
+      - name: checkout
         if: always()
         uses: actions/checkout@v4
+      - name: Run Semgrep SAST
+        if: always()
         run: semgrep ci --config auto --exclude "frontend/src/assets/private/**" --sarif --output semgrep-results.sarif
       - name: Run codeql
         if: always()

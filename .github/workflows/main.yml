@@ -27,13 +27,6 @@ jobs:
     needs: install
     steps:
       - name: checkout
-        if: always()
         uses: actions/checkout@v4
       - name: Run Semgrep SAST
-        if: always()
-        run: semgrep ci --config auto --exclude "frontend/src/assets/private/**" --sarif --output semgrep-results.sarif
-      - name: Run codeql
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: semgrep-results.sarif
+        run: semgrep ci --config auto --exclude "frontend/src/assets/private/**" 

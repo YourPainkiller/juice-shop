@@ -3,30 +3,20 @@ name: CI Pipeline
 on: [push, pull_request]
 
 jobs:
-  build:
+  install:
     runs-on: ubuntu-latest
     container: node:20
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: npm install
-      - name: Build project
-        run: npm run build
-      - uses: actions/upload-artifact@v4  
-        with:
-          name: build-artifacts
-          path: build/
 
   functional_test:
     runs-on: ubuntu-latest
     container: node:20
-    needs: build
+    needs: install
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4  
-        with:
-          name: build-artifacts
-          path: build/
       - name: Install dependencies
         run: npm install
       - name: Run tests
@@ -35,13 +25,11 @@ jobs:
   security_test:
     runs-on: ubuntu-latest
     container: semgrep/semgrep:latest
+    needs: install
     steps:
       - uses: actions/checkout@v4
       - name: Run Semgrep SAST
-        run: |
-          semgrep ci --config auto \
-            --exclude "frontend/src/assets/private/**" \
-            --sarif --output semgrep-results.sarif .
+        run: semgrep ci --config auto --exclude "frontend/src/assets/private/**" --sarif --output semgrep-results.sarif
       - uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep-results.sarif
